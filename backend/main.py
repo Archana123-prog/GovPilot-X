@@ -2,6 +2,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from .routers import challenges, startups, matching, milestones
 from .db.connection import engine
@@ -45,3 +47,6 @@ app.include_router(milestones.router, prefix="/milestones", tags=["Milestones"])
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "ok", "service": "GovPilot-X API"}
+
+
+app.mount("/", StaticFiles(directory=Path(__file__).resolve().parent.parent, html=True), name="frontend")
