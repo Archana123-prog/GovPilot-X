@@ -1,0 +1,267 @@
+/* =========================================
+   GOVPILOT-X NAVBAR
+   ========================================= */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  width: 100%;
+
+  background: rgba(250, 249, 246, 0.94);
+  backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid #dedbd4;
+}
+
+.navbar-container {
+  width: min(1200px, calc(100% - 40px));
+  min-height: 76px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 32px;
+}
+
+/* =========================================
+   BRAND
+   ========================================= */
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  border: none;
+  background: transparent;
+
+  padding: 0;
+  margin: 0;
+
+  cursor: pointer;
+
+  color: #111827;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #f2552c;
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 800;
+
+  box-shadow: 0 6px 18px rgba(242, 85, 44, 0.22);
+}
+
+.brand-name {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.brand-name span {
+  color: #f2552c;
+}
+
+/* =========================================
+   NAVIGATION
+   ========================================= */
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-left: auto;
+}
+
+.navbar-link {
+  position: relative;
+
+  padding: 9px 13px;
+
+  color: #5d6470;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  border-radius: 8px;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.navbar-link:hover {
+  color: #111827;
+  background: #f0eee9;
+}
+
+.navbar-link.active {
+  color: #f2552c;
+}
+
+.navbar-link.active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 13px;
+  right: 13px;
+  bottom: 2px;
+
+  height: 2px;
+
+  border-radius: 999px;
+
+  background: #f2552c;
+}
+
+/* =========================================
+   ACTION BUTTONS
+   ========================================= */
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn {
+  min-height: 40px;
+
+  padding: 0 16px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.nav-btn:hover {
+  transform: translateY(-1px);
+}
+
+.nav-btn-department {
+  background: transparent;
+
+  border: 1px solid #bfc0bd;
+
+  color: #222831;
+}
+
+.nav-btn-department:hover {
+  background: #f0eee9;
+}
+
+.nav-btn-startup {
+  border: 1px solid #f2552c;
+
+  background: #f2552c;
+  color: #ffffff;
+
+  box-shadow: 0 5px 14px rgba(242, 85, 44, 0.18);
+}
+
+.nav-btn-startup:hover {
+  box-shadow: 0 8px 20px rgba(242, 85, 44, 0.25);
+}
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 900px) {
+  .navbar-container {
+    width: min(100% - 28px, 1200px);
+    gap: 16px;
+  }
+
+  .navbar-links {
+    gap: 2px;
+  }
+
+  .navbar-link {
+    padding: 8px 9px;
+  }
+
+  .nav-btn {
+    padding: 0 12px;
+  }
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 680px) {
+  .navbar-container {
+    min-height: 68px;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-actions {
+    margin-left: auto;
+  }
+
+  .nav-btn {
+    min-height: 36px;
+    padding: 0 11px;
+
+    font-size: 12px;
+  }
+
+  .nav-btn-department {
+    display: none;
+  }
+
+  .brand-name {
+    font-size: 19px;
+  }
+
+  .brand-mark {
+    width: 31px;
+    height: 31px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .navbar-container {
+    width: calc(100% - 20px);
+  }
+
+  .nav-btn-startup {
+    padding: 0 10px;
+  }
+
+  .brand-name {
+    font-size: 17px;
+  }
+}

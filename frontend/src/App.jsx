@@ -1,67 +1,628 @@
-import { useState } from 'react';
 
-const metrics = [
-  ['₹42Cr', 'pilot capital unlocked'],
-  ['128', 'active challenges'],
-  ['3.2x', 'faster vendor discovery'],
-];
 
-function App() {
-  const [role, setRole] = useState('department');
+// // import { Navigate, Route, Routes } from "react-router-dom";
+// // import Navbar from "./components/common/Navbar";
 
+// // function Home() {
+// //   return (
+// //     <main className="page">
+// //       {/* HERO SECTION */}
+// //       <section className="hero">
+// //         <div className="hero-content">
+// //           <span className="eyebrow">
+// //             THE PUBLIC INNOVATION LAYER
+// //           </span>
+
+// //           <h1>
+// //             Government challenges.
+// //             <span> Startup velocity.</span>
+// //           </h1>
+
+// //           <p>
+// //             GovPilot-X connects government challenges with verified
+// //             startup capabilities and turns innovation into measurable
+// //             pilot programs.
+// //           </p>
+
+// //           <div className="hero-actions">
+// //             <a href="/login" className="btn btn-primary">
+// //               Post a Challenge
+// //             </a>
+
+// //             <a href="/register" className="btn btn-secondary">
+// //               Join as a Startup
+// //             </a>
+// //           </div>
+// //         </div>
+
+// //         <div className="match-card">
+// //           <span className="eyebrow">
+// //             LIVE MATCH ENGINE
+// //           </span>
+
+// //           <div className="match-score">
+// //             <strong>94%</strong>
+// //             <span>semantic match</span>
+// //           </div>
+
+// //           <div className="match-status">
+// //             <span />
+// //             AI matching active
+// //           </div>
+// //         </div>
+// //       </section>
+
+// //       {/* WORKFLOW */}
+// //       <section className="workflow">
+// //         <div className="section-heading">
+// //           <span className="eyebrow">
+// //             ONE PLATFORM, FULL LOOP
+// //           </span>
+
+// //           <h2>
+// //             From civic problem to
+// //             <span> verified outcome.</span>
+// //           </h2>
+// //         </div>
+
+// //         <div className="workflow-grid">
+
+// //           <article className="workflow-card">
+// //             <small>01</small>
+
+// //             <h3>Challenge Posting</h3>
+
+// //             <p>
+// //               Government departments can convert real problems
+// //               into structured and measurable pilot briefs.
+// //             </p>
+// //           </article>
+
+// //           <article className="workflow-card">
+// //             <small>02</small>
+
+// //             <h3>AI Matching</h3>
+
+// //             <p>
+// //               Match government challenges with verified startups
+// //               based on technology, capability and relevance.
+// //             </p>
+// //           </article>
+
+// //           <article className="workflow-card">
+// //             <small>03</small>
+
+// //             <h3>Pilot Tracking</h3>
+
+// //             <p>
+// //               Track pilot progress, milestones and KPIs before
+// //               procurement and scaling.
+// //             </p>
+// //           </article>
+
+// //         </div>
+// //       </section>
+// //     </main>
+// //   );
+// // }
+
+
+// // /* LOGIN */
+
+// // function Login() {
+// //   return (
+// //     <main className="center-page">
+// //       <div className="auth-card">
+
+// //         <span className="eyebrow">
+// //           GOVPILOT-X
+// //         </span>
+
+// //         <h1>Login</h1>
+
+// //         <p>
+// //           Government departments and startups can access
+// //           their workspace.
+// //         </p>
+
+// //         <button className="btn btn-primary full-width">
+// //           Continue
+// //         </button>
+
+// //       </div>
+// //     </main>
+// //   );
+// // }
+
+
+// // /* REGISTER */
+
+// // function Register() {
+// //   return (
+// //     <main className="center-page">
+// //       <div className="auth-card">
+
+// //         <span className="eyebrow">
+// //           GOVPILOT-X
+// //         </span>
+
+// //         <h1>Create account</h1>
+
+// //         <p>
+// //           Register your department or startup to begin
+// //           the procurement journey.
+// //         </p>
+
+// //         <button className="btn btn-primary full-width">
+// //           Create Account
+// //         </button>
+
+// //       </div>
+// //     </main>
+// //   );
+// // }
+
+
+// // /* 404 */
+
+// // function NotFound() {
+// //   return (
+// //     <main className="center-page">
+// //       <div className="auth-card">
+
+// //         <span className="eyebrow">
+// //           GOVPILOT-X
+// //         </span>
+
+// //         <h1>404</h1>
+
+// //         <p>
+// //           The page you're looking for doesn't exist.
+// //         </p>
+
+// //         <a href="/" className="btn btn-primary">
+// //           Back to Home
+// //         </a>
+
+// //       </div>
+// //     </main>
+// //   );
+// // }
+
+
+// // /* APP */
+
+// // export default function App() {
+// //   return (
+// //     <>
+// //       <Navbar />
+
+// //       <Routes>
+
+// //         <Route
+// //           path="/"
+// //           element={<Home />}
+// //         />
+
+// //         <Route
+// //           path="/login"
+// //           element={<Login />}
+// //         />
+
+// //         <Route
+// //           path="/register"
+// //           element={<Register />}
+// //         />
+
+// //         <Route
+// //           path="/dashboard"
+// //           element={
+// //             <Navigate
+// //               to="/login"
+// //               replace
+// //             />
+// //           }
+// //         />
+
+// //         <Route
+// //           path="*"
+// //           element={<NotFound />}
+// //         />
+
+// //       </Routes>
+// //     </>
+// //   );
+// // }
+
+
+
+// import { Navigate, Route, Routes, Link } from "react-router-dom";
+// import Navbar from "./components/common/Navbar";
+
+// /* =========================
+//    HOME PAGE
+// ========================= */
+
+// function Home() {
+//   return (
+//     <main className="page">
+
+//       {/* HERO SECTION */}
+//       <section className="hero">
+
+//         <div className="hero-content">
+
+//           <span className="eyebrow">
+//             THE PUBLIC INNOVATION LAYER
+//           </span>
+
+//           <h1>
+//             Government challenges.
+//             <span> Startup velocity.</span>
+//           </h1>
+
+//           <p>
+//             GovPilot-X connects government challenges with verified
+//             startup capabilities and turns innovation into measurable
+//             pilot programs.
+//           </p>
+
+//           <div className="hero-actions">
+
+//             <Link
+//               to="/login?role=department"
+//               className="btn btn-primary"
+//             >
+//               Post a Challenge
+//               <span>→</span>
+//             </Link>
+
+//             <Link
+//               to="/register?role=startup"
+//               className="btn btn-secondary"
+//             >
+//               Join as a Startup
+//               <span>→</span>
+//             </Link>
+
+//           </div>
+
+//         </div>
+
+
+//         {/* AI MATCH CARD */}
+//         <div className="match-card">
+
+//           <span className="eyebrow">
+//             LIVE MATCH ENGINE
+//           </span>
+
+//           <div className="match-score">
+//             <strong>94%</strong>
+//             <span>semantic match</span>
+//           </div>
+
+//           <div className="match-status">
+//             <span></span>
+//             AI matching active
+//           </div>
+
+//         </div>
+
+//       </section>
+
+
+//       {/* WORKFLOW SECTION */}
+//       <section className="workflow">
+
+//         <div className="section-heading">
+
+//           <span className="eyebrow">
+//             ONE PLATFORM, FULL LOOP
+//           </span>
+
+//           <h2>
+//             From civic problem to
+//             <span> verified outcome.</span>
+//           </h2>
+
+//           <p>
+//             GovPilot-X creates a structured path from government
+//             challenges to startup discovery, pilot programs and
+//             measurable outcomes.
+//           </p>
+
+//         </div>
+
+
+//         <div className="workflow-grid">
+
+//           {/* CARD 01 */}
+//           <article className="workflow-card">
+
+//             <small>01</small>
+
+//             <h3>
+//               Challenge Posting
+//             </h3>
+
+//             <p>
+//               Government departments can convert real problems
+//               into structured and measurable pilot briefs.
+//             </p>
+
+//           </article>
+
+
+//           {/* CARD 02 */}
+//           <article className="workflow-card">
+
+//             <small>02</small>
+
+//             <h3>
+//               AI Matching
+//             </h3>
+
+//             <p>
+//               Match government challenges with verified startups
+//               based on technology, capability and relevance.
+//             </p>
+
+//           </article>
+
+
+//           {/* CARD 03 */}
+//           <article className="workflow-card">
+
+//             <small>03</small>
+
+//             <h3>
+//               Pilot Tracking
+//             </h3>
+
+//             <p>
+//               Track pilot progress, milestones and KPIs before
+//               procurement and scaling.
+//             </p>
+
+//           </article>
+
+//         </div>
+
+//       </section>
+
+//     </main>
+//   );
+// }
+
+
+// /* =========================
+//    LOGIN PAGE
+// ========================= */
+
+// function Login() {
+//   return (
+//     <main className="center-page">
+
+//       <div className="auth-card">
+
+//         <span className="eyebrow">
+//           GOVPILOT-X
+//         </span>
+
+//         <h1>
+//           Login
+//         </h1>
+
+//         <p>
+//           Government departments and startups can access
+//           their workspace.
+//         </p>
+
+//         <button
+//           className="btn btn-primary full-width"
+//           type="button"
+//         >
+//           Continue
+//         </button>
+
+//       </div>
+
+//     </main>
+//   );
+// }
+
+
+// /* =========================
+//    REGISTER PAGE
+// ========================= */
+
+// function Register() {
+//   return (
+//     <main className="center-page">
+
+//       <div className="auth-card">
+
+//         <span className="eyebrow">
+//           GOVPILOT-X
+//         </span>
+
+//         <h1>
+//           Create account
+//         </h1>
+
+//         <p>
+//           Register your department or startup to begin
+//           the procurement journey.
+//         </p>
+
+//         <button
+//           className="btn btn-primary full-width"
+//           type="button"
+//         >
+//           Create Account
+//         </button>
+
+//       </div>
+
+//     </main>
+//   );
+// }
+
+
+// /* =========================
+//    404 PAGE
+// ========================= */
+
+// function NotFound() {
+//   return (
+//     <main className="center-page">
+
+//       <div className="auth-card">
+
+//         <span className="eyebrow">
+//           GOVPILOT-X
+//         </span>
+
+//         <h1>
+//           404
+//         </h1>
+
+//         <p>
+//           The page you're looking for doesn't exist.
+//         </p>
+
+//         <Link
+//           to="/"
+//           className="btn btn-primary"
+//         >
+//           Back to Home
+//         </Link>
+
+//       </div>
+
+//     </main>
+//   );
+// }
+
+
+// /* =========================
+//    APPLICATION ROUTES
+// ========================= */
+
+// export default function App() {
+//   return (
+//     <>
+//       <Navbar />
+
+//       <Routes>
+
+//         {/* Home */}
+//         <Route
+//           path="/"
+//           element={<Home />}
+//         />
+
+
+//         {/* Login */}
+//         <Route
+//           path="/login"
+//           element={<Login />}
+//         />
+
+
+//         {/* Register */}
+//         <Route
+//           path="/register"
+//           element={<Register />}
+//         />
+
+
+//         {/* Dashboard */}
+//         <Route
+//           path="/dashboard"
+//           element={
+//             <Navigate
+//               to="/login"
+//               replace
+//             />
+//           }
+//         />
+
+
+//         {/* 404 */}
+//         <Route
+//           path="*"
+//           element={<NotFound />}
+//         />
+
+//       </Routes>
+//     </>
+//   );
+// }
+
+
+import { Navigate, Route, Routes } from "react-router-dom";
+import Navbar from "./components/common/Navbar";
+
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Challenges from "./pages/Challenges";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import GovernmentDashboard from "./pages/GovernmentDashboard";
+import StartupDashboard from "./pages/StartupDashboard";
+import ChallengeDetails from "./pages/ChallengeDetails";
+
+function NotFound() {
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <a className="brand" href="/">GovPilot<span>-X</span></a>
-        <nav aria-label="Primary navigation">
-          <a href="#challenges">Challenges</a>
-          <a href="#how-it-works">How it works</a>
-        </nav>
-        <button className="login-button" type="button" onClick={() => setRole(role === 'department' ? 'startup' : 'department')}>
-          {role === 'department' ? 'Startup portal' : 'Department portal'}
-        </button>
-      </header>
+    <main className="center-page">
+      <div className="auth-card">
+        <span className="eyebrow">GOVPILOT-X</span>
 
-      <main>
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <p className="eyebrow">The public innovation layer</p>
-            <h1 id="hero-title">Government challenges.<br /><em>Startup velocity.</em></h1>
-            <p className="lede">Connect public-sector problems with verified startup capability, then turn promising ideas into measurable pilot programs.</p>
-            <div className="hero-actions">
-              <a className="primary-button" href="#challenges">Explore challenges</a>
-              <a className="text-link" href="#how-it-works">See how it works <span aria-hidden="true">→</span></a>
-            </div>
-          </div>
-          <aside className="match-panel" aria-label="Live match engine status">
-            <p className="panel-label">Live match engine</p>
-            <div className="match-score"><strong>94%</strong><span>semantic match</span></div>
-            <div className="signal"><span aria-hidden="true" /> AI matching active</div>
-          </aside>
-        </section>
+        <h1>404</h1>
 
-        <section className="metrics" aria-label="Platform metrics">
-          {metrics.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
-        </section>
+        <p>The page you're looking for doesn't exist.</p>
 
-        <section className="challenge-section" id="challenges" aria-labelledby="challenge-title">
-          <div>
-            <p className="eyebrow">Open opportunities</p>
-            <h2 id="challenge-title">Problems worth solving.</h2>
-          </div>
-          <p className="section-note">A focused starting point for the next generation of civic solutions.</p>
-        </section>
-
-        <section className="steps" id="how-it-works" aria-label="How GovPilot-X works">
-          {[
-            ['01', 'Post a challenge', 'Turn a public problem into a clear, fundable pilot brief.'],
-            ['02', 'Find the right fit', 'Rank verified startups by capability, not connections.'],
-            ['03', 'Prove the outcome', 'Gate progress and payouts against transparent KPIs.'],
-          ].map(([number, title, description]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>)}
-        </section>
-      </main>
-    </div>
+        <a href="/" className="btn btn-primary">
+          Back to Home
+        </a>
+      </div>
+    </main>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <>
+      <Navbar />
+
+      <Routes>
+        {/* Public Pages */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/challenges" element={<Challenges />} />
+
+        {/* Authentication */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Dashboards */}
+        <Route path="/government/dashboard" element={<GovernmentDashboard />} />
+        <Route path="/startup/dashboard" element={<StartupDashboard />} />
+
+        {/* Challenge Details */}
+        <Route path="/challenge/:id" element={<ChallengeDetails />} />
+
+        {/* Temporary redirect */}
+        <Route
+          path="/dashboard"
+          element={<Navigate to="/government/dashboard" replace />}
+        />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+}
