@@ -5,7 +5,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
-from .routers import challenges, startups, matching, milestones
+from .routers import (
+    admin,
+    applications,
+    auth,
+    challenges,
+    departments,
+    evaluations,
+    matching,
+    milestones,
+    notifications,
+    pilots,
+    startups,
+    users,
+)
 from .db.connection import engine
 
 
@@ -42,6 +55,14 @@ app.include_router(challenges.router, prefix="/challenges", tags=["Challenges"])
 app.include_router(startups.router,   prefix="/startups",   tags=["Startups"])
 app.include_router(matching.router,   prefix="/match",      tags=["AI Matching"])
 app.include_router(milestones.router, prefix="/milestones", tags=["Milestones"])
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(departments.router, prefix="/departments", tags=["Departments"])
+app.include_router(applications.router, prefix="/applications", tags=["Applications"])
+app.include_router(evaluations.router, prefix="/evaluations", tags=["Evaluations"])
+app.include_router(pilots.router, prefix="/pilots", tags=["Pilots"])
+app.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 
 @app.get("/health", tags=["Health"])

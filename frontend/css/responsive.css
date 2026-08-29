@@ -1,0 +1,2 @@
+/* Responsive rules shared by all static pages. */
+@media(max-width:800px){.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
