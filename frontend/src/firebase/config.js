@@ -1,41 +1,21 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+/**
+ * DEPRECATED: Firebase has been replaced with Supabase
+ * 
+ * This file is no longer used. All backend services now use Supabase.
+ * 
+ * Update your imports:
+ * OLD: import { auth, db, storage } from '@/firebase/config'
+ * NEW: import { supabase, fetchAPI } from '@/services/supabase'
+ * 
+ * See /services/supabase.js for the new Supabase client configuration.
+ */
 
-// Firebase configuration
-// Values .env file se aayengi.
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
+console.warn(
+  '⚠️  Firebase config is deprecated. Use supabase.js instead: import { supabase } from "@/services/supabase"'
+);
 
-// Validate configuration
-const requiredConfig = {
-  VITE_FIREBASE_API_KEY: firebaseConfig.apiKey,
-  VITE_FIREBASE_AUTH_DOMAIN: firebaseConfig.authDomain,
-  VITE_FIREBASE_PROJECT_ID: firebaseConfig.projectId,
-  VITE_FIREBASE_APP_ID: firebaseConfig.appId,
-};
-
-const missingConfig = Object.entries(requiredConfig)
-  .filter(([, value]) => !value)
-  .map(([key]) => key);
-
-if (missingConfig.length > 0) {
-  console.warn(
-    `Missing Firebase environment variables: ${missingConfig.join(", ")}`
-  );
-}
-
-const firebaseApp = initializeApp(firebaseConfig);
-
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
-export const storage = getStorage(firebaseApp);
-
-export default firebaseApp;
+// Export null as fallback to prevent crashes in old code
+export const auth = null;
+export const db = null;
+export const storage = null;
+export default null;

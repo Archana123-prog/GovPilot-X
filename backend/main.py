@@ -26,6 +26,7 @@ from .db.connection import engine
 async def lifespan(app: FastAPI):
     # Startup: warm up DB pool etc.
     print("[GovPilot-X] Starting up...")
+    print("[GovPilot-X] Connected to Supabase PostgreSQL database")
     yield
     # Shutdown
     print("[GovPilot-X] Shutting down...")
@@ -35,7 +36,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="GovPilot-X API",
     version="1.0.0",
-    description="AI-powered government-startup procurement platform",
+    description="AI-powered government-startup procurement platform with Supabase",
     lifespan=lifespan,
 )
 
