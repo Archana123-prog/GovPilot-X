@@ -90,11 +90,6 @@ async function request(path, options = {}) {
 
 // ─── Auth ───────────────────────────────────────────────────────────────────
 export async function loginUser({ email, password, role }) {
-  const storedUser = getStoredUser();
-  if (storedUser && storedUser.email === email) {
-    return storedUser;
-  }
-
   try {
     const form = new URLSearchParams();
     form.append("username", email);

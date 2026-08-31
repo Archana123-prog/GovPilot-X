@@ -8,12 +8,20 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from ..db.connection import get_db
-from ..db.models import (
-    EligibilityCheck, EligibilityStatus, Application, StartupProfile,
-    User, UserRole, AuditLog
-)
-from ..auth import get_current_user, require_role
+try:
+    from ..db.connection import get_db
+    from ..db.models import (
+        EligibilityCheck, EligibilityStatus, Application, StartupProfile,
+        User, UserRole, AuditLog
+    )
+    from ..auth import get_current_user, require_role
+except (ImportError, ValueError):
+    from db.connection import get_db
+    from db.models import (
+        EligibilityCheck, EligibilityStatus, Application, StartupProfile,
+        User, UserRole, AuditLog
+    )
+    from auth import get_current_user, require_role
 
 router = APIRouter()
 

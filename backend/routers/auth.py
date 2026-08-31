@@ -1,13 +1,19 @@
-"""Auth router — register, login, me."""
-from fastapi import APIRouter, Depends, HTTPException, status
+"""Auth router — register, login (form & JSON), me."""
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from ..db.connection import get_db
-from ..db.models import User, UserRole, Department, StartupProfile
-from ..auth import hash_password, verify_password, create_access_token, get_current_user
+try:
+    from ..db.connection import get_db
+    from ..db.models import User, UserRole, Department, StartupProfile
+    from ..auth import hash_password, verify_password, create_access_token, get_current_user
+except (ImportError, ValueError):
+    from db.connection import get_db
+    from db.models import User, UserRole, Department, StartupProfile
+    from auth import hash_password, verify_password, create_access_token, get_current_user
 
 router = APIRouter()
 
@@ -20,15 +26,21 @@ class RegisterRequest(BaseModel):
     full_name: str
     role: UserRole
     # department fields
-    department_name: str | None = None
-    ministry: str | None = None
-    state: str | None = None
+    department_name: Optional[str] = None
+    ministry: Optional[str] = None
+    state: Optional[str] = None
     # startup fields
-    company_name: str | None = None
-    dpiit_id: str | None = None
+    company_name: Optional[str] = None
+    dpiit_id: Optional[str] = None
     tech_stack: list[str] = []
-    capability_statement: str | None = None
-    sector: str | None = None
+    capability_statement: Optional[str] = None
+    sector: Optional[str] = None
+
+
+class LoginJsonRequest(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: str
 
 
 class TokenResponse(BaseModel):
@@ -69,26 +81,22 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     await db.flush()  # get user.id before creating profiles
 
     if data.role == UserRole.department:
-        if not data.department_name:
-            raise HTTPException(400, "department_name required for department role")
         dept = Department(
             user_id=user.id,
-            name=data.department_name,
-            ministry=data.ministry,
-            state=data.state,
+            name=data.department_name or "Government Department",
+            ministry=data.ministry or "General Administration",
+            state=data.state or "National",
         )
         db.add(dept)
 
     elif data.role == UserRole.startup:
-        if not all([data.company_name, data.dpiit_id, data.capability_statement]):
-            raise HTTPException(400, "company_name, dpiit_id, capability_statement required for startup role")
         profile = StartupProfile(
             user_id=user.id,
-            company_name=data.company_name,
-            dpiit_id=data.dpiit_id,
+            company_name=data.company_name or data.full_name,
+            dpiit_id=data.dpiit_id or "DPIIT-PENDING",
             tech_stack=data.tech_stack,
-            capability_statement=data.capability_statement,
-            sector=data.sector,
+            capability_statement=data.capability_statement or "Innovation provider",
+            sector=data.sector or "Technology",
         )
         db.add(profile)
 
@@ -106,13 +114,41 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
-    form: OAuth2PasswordRequestForm = Depends(),
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(User).where(User.email == form.username))
+    """
+    Accepts both application/x-www-form-urlencoded (OAuth2 standard) and application/json.
+    """
+    content_type = request.headers.get("content-type", "")
+    username = None
+    password = None
+
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            username = body.get("username") or body.get("email")
+            password = body.get("password")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid JSON payload")
+    else:
+        try:
+            form = await request.form()
+            username = form.get("username") or form.get("email")
+            password = form.get("password")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid form payload")
+
+    if not username or not password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username (or email) and password are required",
+        )
+
+    result = await db.execute(select(User).where(User.email == str(username).strip()))
     user = result.scalar_one_or_none()
 
-    if not user or not verify_password(form.password, user.password_hash):
+    if not user or not verify_password(str(password), user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
