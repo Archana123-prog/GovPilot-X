@@ -10,8 +10,12 @@ from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from .db.connection import get_db
-from .db.models import User, UserRole
+try:
+    from .db.connection import get_db
+    from .db.models import User, UserRole
+except (ImportError, ValueError):
+    from db.connection import get_db
+    from db.models import User, UserRole
 
 SECRET_KEY   = os.getenv("SECRET_KEY", "change-me-to-a-long-random-secret")
 ALGORITHM    = "HS256"
@@ -31,13 +35,26 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-# ─── JWT ──────────────────────────────────────────────────────────────────────
+# ─── JWT Tokens ───────────────────────────────────────────────────────────────
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_token(token: str) -> dict:
+    try:
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired authentication token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 # ─── Dependencies ─────────────────────────────────────────────────────────────
@@ -46,33 +63,25 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    credentials_exc = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise credentials_exc
-    except JWTError:
-        raise credentials_exc
+    payload = decode_token(token)
+    user_id: str = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token missing subject claim")
 
-    result = await db.execute(select(User).where(User.id == user_id))
+    result = await db.execute(select(User).where(User.id == user_id, User.is_active == True))
     user = result.scalar_one_or_none()
-    if user is None or not user.is_active:
-        raise credentials_exc
+    if not user:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found or inactive")
     return user
 
 
-def require_role(*roles: UserRole):
-    """Return a dependency that requires the current user to have one of the given roles."""
-    async def _checker(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.role not in roles:
+def require_role(*allowed_roles: UserRole):
+    """FastAPI dependency factory enforcing RBAC."""
+    async def role_checker(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"This action requires role: {[r.value for r in roles]}",
+                detail=f"Access forbidden. Requires one of: {[r.value for r in allowed_roles]}",
             )
         return current_user
-    return _checker
+    return role_checker

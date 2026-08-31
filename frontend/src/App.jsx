@@ -31,29 +31,23 @@ export default function App() {
       <Navbar />
 
       <Routes>
-        {/* Public Pages */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/challenges" element={<Challenges />} />
 
-        {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Dashboards */}
         <Route path="/government/dashboard" element={<GovernmentDashboard />} />
         <Route path="/startup/dashboard" element={<StartupDashboard />} />
 
-        {/* Challenge Details */}
         <Route path="/challenge/:id" element={<ChallengeDetails />} />
 
-        {/* Temporary redirect */}
         <Route
           path="/dashboard"
           element={<Navigate to="/government/dashboard" replace />}
         />
 
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

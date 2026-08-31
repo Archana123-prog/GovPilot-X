@@ -1,5 +1,6 @@
 """FastAPI app factory with CORS, complete router registration, and lifespan events."""
 import os
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -7,24 +8,49 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .routers import (
-    admin,
-    applications,
-    auth,
-    challenges,
-    departments,
-    eligibility,
-    evaluations,
-    matching,
-    milestones,
-    notifications,
-    payments,
-    pilots,
-    startups,
-    users,
-    validations,
-)
-from .db.connection import engine
+# Ensure current and parent directory in sys.path for versatile execution
+current_dir = Path(__file__).resolve().parent
+if str(current_dir) not in sys.path:
+    sys.path.insert(0, str(current_dir))
+
+try:
+    from .routers import (
+        admin,
+        applications,
+        auth,
+        challenges,
+        departments,
+        eligibility,
+        evaluations,
+        matching,
+        milestones,
+        notifications,
+        payments,
+        pilots,
+        startups,
+        users,
+        validations,
+    )
+    from .db.connection import engine
+except (ImportError, ValueError):
+    from routers import (
+        admin,
+        applications,
+        auth,
+        challenges,
+        departments,
+        eligibility,
+        evaluations,
+        matching,
+        milestones,
+        notifications,
+        payments,
+        pilots,
+        startups,
+        users,
+        validations,
+    )
+    from db.connection import engine
 
 
 @asynccontextmanager
