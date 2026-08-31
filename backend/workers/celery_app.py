@@ -1,4 +1,4 @@
-"""Celery worker for async AI matching pipeline."""
+"""Celery worker configuration for asynchronous background jobs."""
 import os
 from celery import Celery
 
@@ -8,7 +8,11 @@ celery_app = Celery(
     "govpilotx",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["backend.workers.match_task"],
+    include=[
+        "backend.workers.match_task",
+        "backend.workers.notification_tasks",
+        "backend.workers.tasks",
+    ],
 )
 
 celery_app.conf.update(

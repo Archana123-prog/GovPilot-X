@@ -1,10 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 
-// Firebase configuration
-// Values .env file se aayengi.
+// Firebase configuration for document & file storage
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -14,28 +16,30 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Validate configuration
-const requiredConfig = {
-  VITE_FIREBASE_API_KEY: firebaseConfig.apiKey,
-  VITE_FIREBASE_AUTH_DOMAIN: firebaseConfig.authDomain,
-  VITE_FIREBASE_PROJECT_ID: firebaseConfig.projectId,
-  VITE_FIREBASE_APP_ID: firebaseConfig.appId,
-};
+const firebaseApp = initializeApp(firebaseConfig);
+export const storage = getStorage(firebaseApp);
 
-const missingConfig = Object.entries(requiredConfig)
-  .filter(([, value]) => !value)
-  .map(([key]) => key);
-
-if (missingConfig.length > 0) {
-  console.warn(
-    `Missing Firebase environment variables: ${missingConfig.join(", ")}`
-  );
+/**
+ * Upload a document file to Firebase Storage.
+ * @param {File} file - The file object to upload
+ * @param {string} path - Storage path prefix (e.g., 'milestone_evidence/milestone-123')
+ * @returns {Promise<string>} - Download URL of the uploaded file
+ */
+export async function uploadDocument(file, path) {
+  const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const fileRef = ref(storage, `${path}/${fileName}`);
+  const snapshot = await uploadBytes(fileRef, file);
+  return await getDownloadURL(snapshot.ref);
 }
 
-const firebaseApp = initializeApp(firebaseConfig);
-
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
-export const storage = getStorage(firebaseApp);
+/**
+ * Get download URL for an existing file in Firebase Storage.
+ * @param {string} fullPath - Full path in the storage bucket
+ * @returns {Promise<string>}
+ */
+export async function getDocumentUrl(fullPath) {
+  const fileRef = ref(storage, fullPath);
+  return await getDownloadURL(fileRef);
+}
 
 export default firebaseApp;
