@@ -1,4 +1,4 @@
-"""Async Celery task: full RAG matching pipeline."""
+"""Async Celery task: full Gemini RAG matching pipeline."""
 import asyncio
 from .celery_app import celery_app
 
@@ -9,9 +9,9 @@ def run_match_pipeline(self, challenge_id: str, top_k: int = 10):
     Full matching pipeline (runs async code in sync Celery worker):
     
     1. Load challenge from DB + get its embedding
-    2. If embedding missing, generate via text-embedding-3-small
+    2. If embedding missing, generate via Google Gemini text-embedding-004
     3. Run pgvector cosine similarity search (threshold=0.78)
-    4. Run GPT-4o RAG evaluation on top-K candidates in parallel
+    4. Run Google Gemini RAG evaluation on top-K candidates in parallel
     5. Save MatchResult records to DB
     6. Return ranked evaluations
     """
@@ -51,7 +51,7 @@ async def _pipeline(challenge_id: str, top_k: int):
         if not candidates:
             return {"challenge_id": challenge_id, "matches": []}
 
-        # RAG evaluation
+        # RAG evaluation with Gemini
         challenge_dict = {
             "title": challenge.title,
             "description": challenge.description,

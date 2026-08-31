@@ -9,7 +9,7 @@ GovPilot-X connects government department challenges with verified startup capab
 
 - **Frontend (`frontend/`)**: React + Vite single page application with role-based views (Department Officer, Startup Founder, Evaluator, Independent Validator, Admin).
 - **Backend (`backend/`)**: FastAPI (Python) asynchronous REST API — single source of truth for all workflows, authentication, audit logs, and data models (PostgreSQL + SQLAlchemy).
-- **AI Engine (`backend/ai/`)**: OpenAI embeddings + pgvector cosine similarity matching and GPT-4o RAG pipeline for candidate ranking.
+- **AI Engine (`backend/ai/`)**: Google Gemini embeddings (`text-embedding-004`) + pgvector cosine similarity matching and Gemini Flash RAG pipeline for candidate ranking.
 - **Workers (`backend/workers/`)**: Celery background tasks for AI matching, deadline reminders, and registry synchronization.
 - **Document Storage**: Firebase Storage connected seamlessly via `.env` for file uploads (signed agreements, milestone evidence, validation reports).
 
@@ -80,7 +80,7 @@ Frontend dev server will start at: `http://localhost:5173`
 
 ### Backend (`backend/.env`):
 - `DATABASE_URL`: PostgreSQL connection string (with asyncpg driver)
-- `OPENAI_API_KEY`: API key for OpenAI embeddings and evaluation
+- `GEMINI_API_KEY`: API key from Google AI Studio for embeddings and evaluation
 - `REDIS_URL`: Redis broker URL for Celery workers
 - `SECRET_KEY`: JWT signing secret
 - `FIREBASE_STORAGE_BUCKET`: Firebase Storage bucket name for server-side documents
