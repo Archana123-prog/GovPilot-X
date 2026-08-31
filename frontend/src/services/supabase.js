@@ -1,59 +1,56 @@
-import { createClient } from '@supabase/supabase-js'
+/**
+ * Supabase client — used for Storage uploads and direct DB queries if needed.
+ * Auth is handled by the FastAPI backend (JWT). Supabase is the storage layer.
+ */
+import { createClient } from "@supabase/supabase-js";
 
-// Supabase configuration
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  throw new Error(
-    `Missing Supabase environment variables: ${
-      !SUPABASE_URL ? 'VITE_SUPABASE_URL' : ''
-    } ${!SUPABASE_KEY ? 'VITE_SUPABASE_KEY' : ''}`
-  )
-}
+export const supabase =
+  SUPABASE_URL && SUPABASE_ANON_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
 
-// Initialize Supabase client
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+// ─── Auth token helpers (JWT from FastAPI backend) ────────────────────────────
 
-// Helper function to get auth token
-export const getAuthToken = () => {
-  return localStorage.getItem('sb_token') || null
-}
+/** Get the stored JWT access token */
+export const getAuthToken = () => localStorage.getItem("govpilot_token") || null;
 
-// Helper function to set auth token
+/** Store JWT access token after login */
 export const setAuthToken = (token) => {
   if (token) {
-    localStorage.setItem('sb_token', token)
+    localStorage.setItem("govpilot_token", token);
   } else {
-    localStorage.removeItem('sb_token')
+    localStorage.removeItem("govpilot_token");
   }
-}
+};
 
-// Helper function for API calls with authentication
+// ─── Authenticated fetch helper ───────────────────────────────────────────────
+
+/**
+ * Make an authenticated API call to the FastAPI backend.
+ * @param {string} endpoint  - e.g. '/auth/me'
+ * @param {RequestInit} options
+ */
 export const fetchAPI = async (endpoint, options = {}) => {
-  const token = getAuthToken()
+  const token = getAuthToken();
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
-  }
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
+  };
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${endpoint}`,
-    {
-      ...options,
-      headers,
-    }
-  )
+    `${import.meta.env.VITE_API_BASE || "http://localhost:8000"}${endpoint}`,
+    { ...options, headers }
+  );
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`)
+    throw new Error(`API error ${response.status}: ${response.statusText}`);
   }
 
-  return response.json()
-}
+  return response.json();
+};
 
-export default supabase
+export default supabase;

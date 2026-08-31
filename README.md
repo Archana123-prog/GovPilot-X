@@ -11,7 +11,7 @@ GovPilot-X connects government department challenges with verified startup capab
 - **Backend (`backend/`)**: FastAPI (Python) asynchronous REST API — single source of truth for all workflows, authentication, audit logs, and data models (PostgreSQL + SQLAlchemy).
 - **AI Engine (`backend/ai/`)**: Google Gemini embeddings (`text-embedding-004`) + pgvector cosine similarity matching and Gemini Flash RAG pipeline for candidate ranking.
 - **Workers (`backend/workers/`)**: Celery background tasks for AI matching, deadline reminders, and registry synchronization.
-- **Document Storage**: Firebase Storage connected seamlessly via `.env` for file uploads (signed agreements, milestone evidence, validation reports).
+- **Document Storage**: Supabase Storage for all file uploads (signed agreements, milestone evidence, validation reports) — same project as the database.
 
 ---
 
@@ -25,9 +25,9 @@ GovPilot-X/
 │   │   ├── pages/          Home, Challenges, Dashboards, Auth
 │   │   ├── components/     Shared UI components (Navbar, Cards, etc.)
 │   │   ├── services/       API client for backend endpoints
-│   │   ├── firebase/       Firebase Storage client & upload utilities
+│   │   ├── firebase/       Supabase Storage client & upload utilities
 │   │   └── styles.css      Global design system styles
-│   ├── .env.example        Frontend environment template (Firebase & API)
+│   ├── .env.example        Frontend environment template (Supabase & API)
 │   ├── package.json
 │   └── vite.config.js
 ├── backend/                FastAPI System of Record
@@ -59,7 +59,7 @@ cd backend
 python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env   # Configure DATABASE_URL, OPENAI_API_KEY, and Firebase Storage
+cp .env.example .env   # Configure SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY
 uvicorn main:app --reload
 ```
 API Documentation will be available at: `http://localhost:8000/docs`
@@ -69,7 +69,7 @@ API Documentation will be available at: `http://localhost:8000/docs`
 ```powershell
 cd frontend
 npm install
-cp .env.example .env   # Configure VITE_FIREBASE_* keys and VITE_API_BASE
+cp .env.example .env   # Configure VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_API_BASE
 npm run dev
 ```
 Frontend dev server will start at: `http://localhost:5173`
@@ -83,9 +83,11 @@ Frontend dev server will start at: `http://localhost:5173`
 - `GEMINI_API_KEY`: API key from Google AI Studio for embeddings and evaluation
 - `REDIS_URL`: Redis broker URL for Celery workers
 - `SECRET_KEY`: JWT signing secret
-- `FIREBASE_STORAGE_BUCKET`: Firebase Storage bucket name for server-side documents
+- `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`: Supabase project credentials for storage
+- `SUPABASE_STORAGE_BUCKET`: Supabase Storage bucket name (create in Supabase Dashboard)
 
 ### Frontend (`frontend/.env`):
 - `VITE_API_BASE`: Backend API base URL (`http://localhost:8000`)
-- `VITE_FIREBASE_STORAGE_BUCKET`: Firebase Storage bucket for client file uploads
-- `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`: Firebase project identifiers
+- `VITE_SUPABASE_URL`: Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Supabase anon/public key for storage uploads
+- `VITE_SUPABASE_STORAGE_BUCKET`: Storage bucket name for client file uploads

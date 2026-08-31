@@ -1,75 +1,53 @@
-"""Supabase Storage Service for file uploads."""
+"""Supabase Storage service — replaces Firebase Storage for document management."""
+import os
+import httpx
 from typing import Optional
-from .supabase import get_supabase_client
 
 
 class SupabaseStorageService:
-    """Handle file uploads and management via Supabase Storage."""
+    """
+    Handles document uploads and signed URL generation via Supabase Storage.
+    Used for: pilot agreements, milestone evidence, validation reports.
+    """
 
     def __init__(self):
-        self.client = get_supabase_client()
-        self.bucket_name = "govpilot-files"  # Create this bucket in Supabase
+        self.supabase_url = os.getenv("SUPABASE_URL", "").rstrip("/")
+        self.service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+        self.bucket = os.getenv("SUPABASE_STORAGE_BUCKET", "govpilot-documents")
 
-    async def upload_file(
-        self,
-        file_path: str,
-        file_content: bytes,
-        folder: str = "documents",
-    ) -> dict:
-        """
-        Upload a file to Supabase Storage.
-        
-        Args:
-            file_path: Path/name for the file
-            file_content: File bytes
-            folder: Folder in bucket (documents, avatars, etc)
-        
-        Returns:
-            Upload result with public URL
-        """
-        try:
-            # Create full path: folder/file_path
-            full_path = f"{folder}/{file_path}"
-            
-            # Upload file
-            response = self.client.storage.from_(self.bucket_name).upload(
-                full_path,
-                file_content,
-            )
-            
-            # Get public URL
-            public_url = self.client.storage.from_(self.bucket_name).get_public_url(
-                full_path
-            )
-            
-            return {
-                "success": True,
-                "path": full_path,
-                "public_url": public_url,
-                "size": len(file_content),
-            }
-        except Exception as e:
-            return {
-                "success": False,
-                "error": str(e),
-            }
+    @property
+    def _headers(self) -> dict:
+        return {
+            "Authorization": f"Bearer {self.service_role_key}",
+            "apikey": self.service_role_key,
+        }
 
-    async def delete_file(self, file_path: str) -> bool:
+    def get_public_url(self, storage_path: str) -> str:
+        """Construct the public Supabase Storage URL for a given object path."""
+        return f"{self.supabase_url}/storage/v1/object/public/{self.bucket}/{storage_path}"
+
+    async def get_signed_url(self, storage_path: str, expires_in: int = 3600) -> str:
+        """Generate a signed (temporary) URL for a private file."""
+        url = f"{self.supabase_url}/storage/v1/object/sign/{self.bucket}/{storage_path}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                url,
+                headers=self._headers,
+                json={"expiresIn": expires_in},
+            )
+            resp.raise_for_status()
+            return resp.json().get("signedURL", "")
+
+    async def delete_file(self, storage_path: str) -> bool:
         """Delete a file from Supabase Storage."""
-        try:
-            self.client.storage.from_(self.bucket_name).remove([file_path])
-            return True
-        except Exception:
-            return False
+        url = f"{self.supabase_url}/storage/v1/object/{self.bucket}/{storage_path}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.delete(url, headers=self._headers)
+            return resp.status_code == 200
 
-    async def get_public_url(self, file_path: str) -> str:
-        """Get public URL for a file."""
-        try:
-            url = self.client.storage.from_(self.bucket_name).get_public_url(file_path)
-            return url
-        except Exception:
-            return ""
-
-
-# Global instance
-supabase_storage = SupabaseStorageService()
+    def parse_path_from_url(self, url: str) -> Optional[str]:
+        """Extract internal storage path from a Supabase Storage public URL."""
+        marker = f"/object/public/{self.bucket}/"
+        if marker in url:
+            return url.split(marker)[1].split("?")[0]
+        return None
